@@ -1,5 +1,4 @@
 import 'package:crimson/crimson.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart' as m;
 import 'package:json_annotation/json_annotation.dart';
 
 import 'media.dart';
@@ -7,7 +6,6 @@ import 'media.dart';
 part 'entities.g.dart';
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Entities {
   Entities();
@@ -31,7 +29,6 @@ class Entities {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Hashtag {
   Hashtag();
@@ -47,7 +44,6 @@ class Hashtag {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Poll {
   Poll();
@@ -64,7 +60,6 @@ class Poll {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Option {
   Option();
@@ -79,7 +74,6 @@ class Option {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Symbol {
   Symbol();
@@ -94,7 +88,6 @@ class Symbol {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Url {
   Url();
@@ -113,7 +106,6 @@ class Url {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class UserMention {
   UserMention();

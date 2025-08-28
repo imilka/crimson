@@ -1,11 +1,9 @@
 import 'package:crimson/crimson.dart';
-import 'package:dart_json_mapper/dart_json_mapper.dart' as m;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'media.g.dart';
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Media {
   Media();
@@ -40,7 +38,6 @@ class Media {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Sizes {
   Sizes();
@@ -59,7 +56,6 @@ class Sizes {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Size {
   Size();
@@ -76,7 +72,6 @@ class Size {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class AdditionalMediaInfo {
   AdditionalMediaInfo();
@@ -96,7 +91,6 @@ class AdditionalMediaInfo {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class VideoInfo {
   VideoInfo();
@@ -114,7 +108,6 @@ class VideoInfo {
 }
 
 @JsonSerializable()
-@m.jsonSerializable
 @json
 class Variant {
   Variant();

@@ -7,10 +7,9 @@ environment:
 dependencies:
   crimson:
     path: ../
-  intl: ^0.19.0
+  intl: any
   json_serializable: ^6.7.0
   build_runner: ^2.4.7
   test: ^1.24.4
   freezed_annotation: ^2.4.0
-  dart_json_mapper: ^2.2.10
   freezed: ^2.4.0

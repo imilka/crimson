@@ -28,10 +28,10 @@ extension ClassElementX on ClassElement {
   List<PropertyInducingElement> get allAccessors {
     final accessorNames = <String>{};
     return [
-      ...accessors.map((e) => e.variable),
+      ...accessors.map((e) => e.variable2!),
       for (final supertype in allSupertypes) ...[
         if (!supertype.isDartCoreObject)
-          ...supertype.accessors.map((e) => e.variable),
+          ...supertype.accessors.map((e) => e.variable2!),
       ],
     ]
         .where(
@@ -128,9 +128,9 @@ extension PropertyInducingElementX on PropertyInducingElement {
       return annName;
     }
 
-    final separator = _jsonKebabChecker.hasAnnotationOf(enclosingElement!)
+    final separator = _jsonKebabChecker.hasAnnotationOf(enclosingElement3!)
         ? '-'
-        : _jsonSnakeChecker.hasAnnotationOf(enclosingElement!)
+        : _jsonSnakeChecker.hasAnnotationOf(enclosingElement3!)
             ? '_'
             : null;
     if (separator != null) {
@@ -178,15 +178,15 @@ extension ExecutableElementX on ExecutableElement {
     }
 
     if (this is MethodElement) {
-      return '${enclosingElement.name}.$name';
+      return '${enclosingElement3.name}.$name';
     }
 
     if (this is ConstructorElement) {
       // Ignore the default constructor.
       if (name.isEmpty) {
-        return '${enclosingElement.name}';
+        return '${enclosingElement3.name}';
       }
-      return '${enclosingElement.name}.$name';
+      return '${enclosingElement3.name}.$name';
     }
 
     throw UnsupportedError(
