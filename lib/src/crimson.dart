@@ -23,8 +23,8 @@ class Crimson {
   Never _error(int offset, {String? expected}) {
     throw FormatException(
       'Unexpected token: '
-      '${expected != null ? 'expected $expected actual: ' : ''}'
-      '${String.fromCharCodes(buffer, offset, offset + 5)}',
+          '${expected != null ? 'expected $expected actual: ' : ''}'
+          '${String.fromCharCodes(buffer, offset, offset + 5)}',
       buffer,
       offset,
     );
@@ -192,7 +192,15 @@ class Crimson {
   @pragma('vm:prefer-inline')
   int readInt() {
     _skipWhitespace();
-    return _readInt();
+    final value = _readNum();
+    if (value is int) {
+      return value;
+    }
+    throw FormatException(
+      'Expected a safe integer, but got $value',
+      buffer,
+      _offset,
+    );
   }
 
   /// Reads an [int] value or null.
@@ -202,9 +210,16 @@ class Crimson {
     if (buffer[_offset] == tokenN) {
       _offset += 4;
       return null;
-    } else {
-      return _readInt();
     }
+    final value = _readNum();
+    if (value is int) {
+      return value;
+    }
+    throw FormatException(
+      'Expected a safe integer, but got $value',
+      buffer,
+      _offset,
+    );
   }
 
   int _readInt() {
@@ -482,18 +497,57 @@ class Crimson {
       _error(_offset, expected: '"');
     }
 
+    // --- Define BigInt constants for safe arithmetic ---
+    final prime = BigInt.from(0x01000193);
+    final mask = BigInt.parse('FFFFFFFF', radix: 16); // 32-bit mask
+
+    // Debug: Updated to reflect the use of the corrected BigInt algorithm
+    // print('--- Starting readStringHash (BigInt Corrected) at offset $_offset ---');
+
     var i = _offset + 1;
-    var hash = 0xcbf29ce484222325;
+    // Use 32-bit FNV-1a hash. The accumulator must be a BigInt.
+    var hash = BigInt.from(0x811c9dc5);
+
     while (true) {
-      var c = buffer[i++];
+      var c = buffer[i++]; // Read the next byte.
+
+      String origin;
+
       if (c == tokenDoubleQuote) {
         _offset = i;
-        return hash;
+        // Convert the final BigInt hash to a standard signed int before returning.
+        final finalHash = hash.toSigned(32).toInt();
+
+        // Debug: Print the final calculated hash.
+        // print('--- Found closing quote. Final 32-bit hash: $finalHash ---');
+        // This debug line is now a perfect way to verify the fix.
+        // The two printed values should be identical when hashing the string "id".
+        // print('ID HASH (from static fn): ${Crimson.hash('id')}');
+        return finalHash;
       } else if (c == tokenBackslash) {
-        c = _readEscapeSequence(buffer[i++]);
+        final escapeChar = buffer[i++];
+        origin = 'escape (\\${String.fromCharCode(escapeChar)})';
+        c = _readEscapeSequence(escapeChar);
+      } else {
+        origin = 'literal char';
       }
-      hash ^= c;
-      hash *= 0x100000001b3;
+
+      // Your existing debug print - no changes needed here.
+      final hexValue = '0x${c.toRadixString(16).padLeft(2, '0')}';
+      final charRepresentation = (c >= 32 && c < 127) ? String.fromCharCode(c) : 'non-printable';
+      // print(
+      //   'Hashing byte | '
+      //       'value: ${c.toString().padRight(3)} | '
+      //       'hex: ${hexValue.padRight(6)} | '
+      //       'char: \'$charRepresentation\' | '
+      //       'source: $origin',
+      // );
+
+      // --- Corrected, Platform-Safe Hashing Logic ---
+      // 1. Convert the byte to a BigInt for the XOR operation.
+      hash ^= BigInt.from(c);
+      // 2. Perform multiplication and masking using safe BigInt arithmetic.
+      hash = (hash * prime) & mask;
     }
   }
 
@@ -621,12 +675,26 @@ class Crimson {
   ///
   /// This method should only be used at compile-time since it is not very fast.
   static int hash(String string) {
+    // Define constants as BigInts to avoid repeated conversions
+    final prime = BigInt.from(0x01000193);
+    final mask = BigInt.parse('FFFFFFFF', radix: 16); // A 32-bit mask
+
     final bytes = utf8.encode(string);
-    var hash = 0xcbf29ce484222325;
+
+    // The hash accumulator must be a BigInt
+    var hash = BigInt.from(0x811c9dc5);
+
     for (var i = 0; i < bytes.length; i++) {
-      hash ^= bytes[i];
-      hash *= 0x100000001b3;
+      hash ^= BigInt.from(bytes[i]);
+
+      // Perform multiplication AND masking in a single, safe BigInt operation.
+      // BigInt multiplication has no precision loss. The mask is applied
+      // to the correct, precise result.
+      hash = (hash * prime) & mask;
     }
-    return hash;
+
+    // The final result is a 32-bit number. Convert it to a signed int
+    // to match the original function's return type.
+    return hash.toSigned(32).toInt();
   }
 }

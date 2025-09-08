@@ -77,7 +77,7 @@ const surrogateTagMask = 0xFC00;
 const surrogateValueMask = 0x3FF;
 const leadSurrogateMin = 0xD800;
 
-const maxInt = 9223372036854775807;
+const maxInt = 9007199254740991;
 
 const canDirectWrite = [
   false, false, false, false, false, false, false, false, //
